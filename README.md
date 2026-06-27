@@ -47,18 +47,13 @@ Then queue up.
 Plain HTML, CSS, and vanilla JavaScript — no frameworks, no build step. Stats and crosshair preference persist via `localStorage`.
 
 ## Live site
+## Deployment
 
 Deployed as a static site on Netlify.
 
-- Live URL: add your deployed Netlify URL here
-
-## Deployment
+- Live URL: https://sightlin9.netlify.app/
 
 This project does not need a build step.
-
-- Base directory: leave blank
-- Build command: leave blank
-- Publish directory: `./`
 
 ## How to use
 
