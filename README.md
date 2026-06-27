@@ -46,6 +46,28 @@ Then queue up.
 
 Plain HTML, CSS, and vanilla JavaScript — no frameworks, no build step. Stats and crosshair preference persist via `localStorage`.
 
+## Live site
+
+Deployed as a static site on Netlify.
+
+- Live URL: add your deployed Netlify URL here
+
+## Deployment
+
+This project does not need a build step.
+
+- Base directory: leave blank
+- Build command: leave blank
+- Publish directory: `./`
+
+## How to use
+
+1. Open the site in your browser.
+2. Choose a drill from the main menu.
+3. Adjust target size, crosshair size, spawn speed, or session length from the settings panel.
+4. Click the targets to train your aim and track your score and accuracy.
+5. Your stats and crosshair preference are saved locally in your browser.
+
 ## Roadmap ideas
 
 - [ ] Sensitivity-matching calibration step
