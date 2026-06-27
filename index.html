@@ -22,6 +22,7 @@
     --cyan: #5EEAD4;
     --cyan-dim: #2C4A45;
     --gold: #E8B355;
+    --crosshair-scale: 1;
     --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
     --display: 'Oswald', 'Arial Narrow', sans-serif;
     --body: 'Inter', -apple-system, sans-serif;
@@ -68,18 +69,18 @@
   .style-block.cross .cross-arm{ position:absolute; background: var(--cyan); }
   .style-block.cross .cross-arm.h{ width: 16px; height: 2px; top:50%; left:50%; transform: translate(-50%,-50%); }
   .style-block.cross .cross-arm.v{ width: 2px; height: 16px; top:50%; left:50%; transform: translate(-50%,-50%); }
-  .style-block.cross .cross-gap{ position:absolute; width:6px; height:6px; top:50%; left:50%; transform: translate(-50%,-50%); background: var(--bg); border-radius:1px; }
+  .style-block.cross .cross-gap{ position:absolute; width:calc(6px * var(--crosshair-scale)); height:calc(6px * var(--crosshair-scale)); top:50%; left:50%; transform: translate(-50%,-50%); background: var(--bg); border-radius:1px; }
 
   /* ===== Style 2: DOT (small, precise) ===== */
   .style-block.dot .dot-only{
     position:absolute; top:50%; left:50%; transform: translate(-50%,-50%);
-    width: 5px; height:5px; background: var(--cyan); border-radius:50%;
-    box-shadow: 0 0 4px rgba(94,234,212,0.8);
+    width: calc(5px * var(--crosshair-scale)); height: calc(5px * var(--crosshair-scale)); background: var(--cyan); border-radius:50%;
+    box-shadow: 0 0 calc(4px * var(--crosshair-scale)) rgba(94,234,212,0.8);
   }
 
   /* ===== Style 3: ASTERISK (*) ===== */
   .style-block.asterisk .star-arm{
-    position:absolute; top:50%; left:50%; width: 2px; height: 15px;
+    position:absolute; top:50%; left:50%; width: calc(2px * var(--crosshair-scale)); height: calc(15px * var(--crosshair-scale));
     background: var(--cyan); transform-origin: center;
   }
   .style-block.asterisk .star-arm.a1{ transform: translate(-50%,-50%) rotate(0deg); }
@@ -89,19 +90,19 @@
   /* ===== Style 4: RETICLE (ring + ticks + center dot, classic FPS style) ===== */
   .style-block.reticle .ring{
     position:absolute; top:50%; left:50%; transform: translate(-50%,-50%);
-    width: 26px; height:26px; border-radius:50%;
-    border: 1px solid rgba(94,234,212,0.5);
+    width: calc(26px * var(--crosshair-scale)); height: calc(26px * var(--crosshair-scale)); border-radius:50%;
+    border: calc(1px * var(--crosshair-scale)) solid rgba(94,234,212,0.5);
     transition: width .12s ease, height .12s ease, border-color .12s ease;
   }
   .style-block.reticle .center-dot{
     position:absolute; top:50%; left:50%; transform: translate(-50%,-50%);
-    width: 3px; height:3px; background: var(--cyan); border-radius:50%;
+    width: calc(3px * var(--crosshair-scale)); height: calc(3px * var(--crosshair-scale)); background: var(--cyan); border-radius:50%;
   }
   .style-block.reticle .tick{ position:absolute; background: rgba(236,231,216,0.55); }
-  .style-block.reticle .tick.top{ width:1px; height:7px; top:-13px; left:0; transform: translateX(-50%); }
-  .style-block.reticle .tick.bottom{ width:1px; height:7px; bottom:-13px; left:0; transform: translateX(-50%); }
-  .style-block.reticle .tick.left{ width:7px; height:1px; top:0; left:-13px; transform: translateY(-50%); }
-  .style-block.reticle .tick.right{ width:7px; height:1px; top:0; right:-13px; transform: translateY(-50%); }
+  .style-block.reticle .tick.top{ width:calc(1px * var(--crosshair-scale)); height:calc(7px * var(--crosshair-scale)); top:calc(-13px * var(--crosshair-scale)); left:0; transform: translateX(-50%); }
+  .style-block.reticle .tick.bottom{ width:calc(1px * var(--crosshair-scale)); height:calc(7px * var(--crosshair-scale)); bottom:calc(-13px * var(--crosshair-scale)); left:0; transform: translateX(-50%); }
+  .style-block.reticle .tick.left{ width:calc(7px * var(--crosshair-scale)); height:calc(1px * var(--crosshair-scale)); top:0; left:calc(-13px * var(--crosshair-scale)); transform: translateY(-50%); }
+  .style-block.reticle .tick.right{ width:calc(7px * var(--crosshair-scale)); height:calc(1px * var(--crosshair-scale)); top:0; right:calc(-13px * var(--crosshair-scale)); transform: translateY(-50%); }
 
   /* click feedback per style (flashes cyan -> red briefly on mousedown) */
   body.aiming #crosshair .cross-arm{ background: var(--red); }
@@ -623,6 +624,10 @@
     <div class="row">
       <label>Target Size <span id="size-val">100%</span></label>
       <input type="range" id="size-slider" min="50" max="150" value="100" data-native-cursor>
+    </div>
+    <div class="row">
+      <label>Crosshair Size <span id="crosshair-val">100%</span></label>
+      <input type="range" id="crosshair-slider" min="50" max="150" value="100" data-native-cursor>
     </div>
     <div class="row">
       <label>Spawn Speed <span id="speed-val">100%</span></label>

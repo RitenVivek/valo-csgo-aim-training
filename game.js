@@ -17,10 +17,21 @@ window.addEventListener('mouseup', () => document.body.classList.remove('aiming'
 // ---------- Crosshair style picker ----------
 const CROSSHAIR_STYLES = ['cross', 'dot', 'asterisk', 'reticle'];
 const CROSSHAIR_KEY = 'sightline_crosshair_v1';
+const CROSSHAIR_SCALE_KEY = 'sightline_crosshair_scale_v1';
+const CROSSHAIR_MIN = 50;
+const CROSSHAIR_MAX = 150;
 
 function loadCrosshairStyle() {
   const saved = localStorage.getItem(CROSSHAIR_KEY);
   return CROSSHAIR_STYLES.includes(saved) ? saved : 'cross';
+}
+function loadCrosshairScale() {
+  try {
+    const raw = localStorage.getItem(CROSSHAIR_SCALE_KEY);
+    const value = Number(raw);
+    if (!Number.isNaN(value) && value >= CROSSHAIR_MIN && value <= CROSSHAIR_MAX) return value;
+  } catch (e) {}
+  return 100;
 }
 function applyCrosshairStyle(style) {
   CROSSHAIR_STYLES.forEach(s => crosshair.classList.remove('style-' + s));
@@ -30,7 +41,17 @@ function applyCrosshairStyle(style) {
     btn.classList.toggle('active', btn.dataset.style === style);
   });
 }
+function applyCrosshairScale(scale) {
+  const normalized = Math.min(Math.max(scale, CROSSHAIR_MIN), CROSSHAIR_MAX);
+  document.documentElement.style.setProperty('--crosshair-scale', normalized / 100);
+  try { localStorage.setItem(CROSSHAIR_SCALE_KEY, normalized); } catch (e) {}
+  const crosshairValEl = document.getElementById('crosshair-val');
+  if (crosshairValEl) crosshairValEl.textContent = normalized + '%';
+  const crosshairSliderEl = document.getElementById('crosshair-slider');
+  if (crosshairSliderEl) crosshairSliderEl.value = normalized;
+}
 applyCrosshairStyle(loadCrosshairStyle());
+applyCrosshairScale(loadCrosshairScale());
 
 const chPicker = document.getElementById('crosshair-picker');
 function toggleChPicker(triggerBtn) {
@@ -148,15 +169,22 @@ const exitBtn = document.getElementById('exit-btn');
 const settingsBtn = document.getElementById('settings-btn');
 const settingsPanel = document.getElementById('settings-panel');
 const sizeSlider = document.getElementById('size-slider');
+const crosshairSlider = document.getElementById('crosshair-slider');
 const speedSlider = document.getElementById('speed-slider');
 const lenSlider = document.getElementById('len-slider');
 const sizeVal = document.getElementById('size-val');
+const crosshairVal = document.getElementById('crosshair-val');
 const speedVal = document.getElementById('speed-val');
 const lenVal = document.getElementById('len-val');
 
-let settings = { size: 100, speed: 100, length: 30 };
+let settings = { size: 100, crosshairSize: loadCrosshairScale(), speed: 100, length: 30 };
 
 sizeSlider.addEventListener('input', () => { settings.size = +sizeSlider.value; sizeVal.textContent = settings.size + '%'; });
+crosshairSlider.addEventListener('input', () => {
+  settings.crosshairSize = +crosshairSlider.value;
+  crosshairVal.textContent = settings.crosshairSize + '%';
+  applyCrosshairScale(settings.crosshairSize);
+});
 speedSlider.addEventListener('input', () => { settings.speed = +speedSlider.value; speedVal.textContent = settings.speed + '%'; });
 lenSlider.addEventListener('input', () => { settings.length = +lenSlider.value; lenVal.textContent = settings.length + 's'; });
 
@@ -320,6 +348,14 @@ function spawnHitMark(x, y, text, color) {
   setTimeout(() => el.remove(), 600);
 }
 
+function getTargetHitValue(e, size) {
+  const rect = e.target.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+  const dist = Math.hypot(offsetX - rect.width / 2, offsetY - rect.height / 2);
+  return dist <= size * 0.35 ? 10 : 5;
+}
+
 function spawnMissRing(x, y) {
   const el = document.createElement('div');
   el.className = 'miss-ring';
@@ -329,11 +365,11 @@ function spawnMissRing(x, y) {
   setTimeout(() => el.remove(), 400);
 }
 
-function registerShot(hit, reactionMs) {
+function registerShot(hit, reactionMs, points = 10) {
   session.shots++;
   if (hit) {
     session.hits++;
-    session.score += 10;
+    session.score += points;
     if (reactionMs !== undefined && reactionMs !== null) session.reactionTimes.push(reactionMs);
   }
   const acc = session.shots > 0 ? Math.round((session.hits / session.shots) * 100) : 100;
@@ -368,8 +404,9 @@ function spawnGridshotTarget() {
     e.stopPropagation();
     if (session.ended) return;
     const reaction = performance.now() - parseFloat(el.dataset.spawnedAt);
-    registerShot(true, reaction);
-    spawnHitMark(x, y, '+10', 'var(--cyan)');
+    const points = getTargetHitValue(e, size);
+    registerShot(true, reaction, points);
+    spawnHitMark(x, y, '+' + points, 'var(--cyan)');
     el.classList.add('dying');
     setTimeout(() => el.remove(), 130);
     spawnGridshotTarget();
@@ -526,8 +563,9 @@ function spawnPeekTarget() {
       spawnHitMark(x, y, 'DECOY', '#FF3B3B');
     } else {
       const reaction = performance.now() - parseFloat(el.dataset.spawnedAt);
-      registerShot(true, reaction);
-      spawnHitMark(x, y, '+10', 'var(--cyan)');
+      const points = getTargetHitValue(e, size);
+      registerShot(true, reaction, points);
+      spawnHitMark(x, y, '+' + points, 'var(--cyan)');
     }
     el.classList.add('dying');
     setTimeout(() => el.remove(), 130);
@@ -583,8 +621,9 @@ function spawnSwitchTarget() {
     e.stopPropagation();
     if (session.ended) return;
     const reaction = performance.now() - parseFloat(el.dataset.spawnedAt);
-    registerShot(true, reaction);
-    spawnHitMark(x, y, '+10', 'var(--cyan)');
+    const points = getTargetHitValue(e, size);
+    registerShot(true, reaction, points);
+    spawnHitMark(x, y, '+' + points, 'var(--cyan)');
     el.classList.add('dying');
     setTimeout(() => el.remove(), 130);
     session.switchTargets = session.switchTargets.filter(t => t !== descriptor);
