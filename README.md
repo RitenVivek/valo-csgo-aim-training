@@ -27,18 +27,6 @@ Each drill tracks accuracy, reaction time, and score, and saves your personal be
 
 Pick from four built-in crosshairs — **Cross**, **Dot**, **Asterisk**, and **Reticle** — from the nav bar or the in-trainer settings panel. Your choice is saved automatically.
 
-## Getting started
-
-1. Download or clone this repo
-2. Keep `index.html` and `game.js` in the same folder
-3. Open `index.html` in any modern browser
-
-```bash
-git clone https://github.com/yourusername/sightline.git
-cd sightline
-open index.html   # or just double-click it
-```
-
 ## Settings
 
 Inside any drill, the ⚙ settings panel lets you adjust:
